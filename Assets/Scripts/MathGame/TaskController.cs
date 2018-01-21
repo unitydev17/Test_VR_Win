@@ -32,7 +32,7 @@ public class TaskController : MonoBehaviour
 		currentTask = 0;
 		tasks [0] = new Task (0, new Vector3 (20f, 3f, -30f), "1 + 2 = ?", 1, "1", "3", "4");
 		tasks [1] = new Task (1, new Vector3 (-25f, 3f, -30f), "3 * (4 - 12) = ?", 2, "64", "-33", "-24", "12");
-		tasks [2] = new Task (2, new Vector3 (-25f, 3f, 25f), "44 * 11 = ?", 1, "554", "484", "441", "444", "441");
+		tasks [2] = new Task (2, new Vector3 (-25f, 3f, 25f), "44 * 11 = ?", 1, "554", "484", "441", "444", "447");
 		tasks [3] = new Task (3, new Vector3 (25f, 3f, 25f), "12 * 13 = ?", 2, "165", "136", "156", "123", "126", "221");
 		foreach (Task task in tasks) {
 			PlaceTask (task);

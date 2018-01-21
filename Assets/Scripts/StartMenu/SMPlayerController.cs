@@ -4,9 +4,20 @@ using UnityEngine;
 
 public class SMPlayerController : CommonPlayerController
 {
-	public override CommonCrosshairController GetCrosshair ()
+	private CommonCrosshairController crosshair;
+	
+	public override CommonCrosshairController SetCrosshair ()
 	{
-		return GetComponentInChildren<SMCrosshairController> ();
+		crosshair = GetComponentInChildren<CommonCrosshairController> ();
+		return crosshair;
+	}
+
+
+	protected override void Start() {
+		base.Start ();
+		if (GameController.isVRSimulated) {
+			crosshair.SetVRControlMode();
+		}
 	}
 
 
@@ -18,8 +29,13 @@ public class SMPlayerController : CommonPlayerController
 			#else
 			Application.Quit ();
 			#endif
+
 		} else if (MenuBundle.instance.IsRunMathGame (selectedItem)) {
 			GameController.instance.RunMathGame ();
+
+		} else if (MenuBundle.instance.IsChangeControlMode (selectedItem)) {
+			GameController.instance.ChangeControlMode();
+			GameController.instance.StartMenu ();
 		}
 			
 	}

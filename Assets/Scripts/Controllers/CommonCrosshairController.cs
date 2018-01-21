@@ -2,7 +2,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-public abstract class CommonCrosshairController : MonoBehaviour {
+public class CommonCrosshairController : MonoBehaviour {
 
 	protected enum ControlMode {
 		Windows,
@@ -50,8 +50,16 @@ public abstract class CommonCrosshairController : MonoBehaviour {
 	}
 
 
+	public void SetVRControlMode() {
+		controlMode = ControlMode.VR;
+	}
+
+	public void SetWinControlMode() {
+		controlMode = ControlMode.Windows;
+	}
+
 	void Awake() {
-		controlMode = ControlMode.VR; 
+		SetWinControlMode ();
 	}
 
 

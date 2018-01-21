@@ -7,19 +7,28 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+	private const string START_SCENE = "Start";
+	private const string MATH_GAME_SCENE = "MathGame";
 
 	public static GameController instance;
+	public static bool isVRSimulated = false;
 
 	public GameObject finishMenuPrefab;
 	public GameObject inGameMenuPrefab;
 
-	private string[] games = new string[]{ "Start", "MathGame" };
+	private string[] games = new string[]{ START_SCENE, MATH_GAME_SCENE };
+
 	private GameObject inGameMenu;
 	private GameObject finishMenu;
+
 	private int currentGame = 1;
+
+
 
 	private void Awake ()
 	{
+		SceneManager.sceneLoaded += CustomizeScenes;
+
 		if (instance == null) {
 			instance = this;
 			DontDestroyOnLoad (this);
@@ -27,7 +36,7 @@ public class GameController : MonoBehaviour
 		}
 		Destroy (this);
 	}
-		
+
 
 	public void RunGame ()
 	{
@@ -46,12 +55,18 @@ public class GameController : MonoBehaviour
 	public void OpenFinishMenu(Vector3 position) {
 		finishMenu = Instantiate (finishMenuPrefab, position, Quaternion.identity);
 		finishMenu.name = finishMenuPrefab.name;
-		SetPlayerStatistics (finishMenu);
+		MenuBundle.instance.SetPlayerStatistics (finishMenu);
 	}
 
 
 	public void StartMenu() {
 		SceneManager.LoadScene (games [0]);
+	}
+
+	public void CustomizeScenes(Scene scene, LoadSceneMode mode) {
+		if (START_SCENE.Equals (scene.name)) {
+			MenuBundle.instance.CustomizeMainMenu (isVRSimulated);
+		}
 	}
 
 
@@ -73,31 +88,25 @@ public class GameController : MonoBehaviour
 
 		inGameMenu = Instantiate (inGameMenuPrefab, position, rotation);
 		inGameMenu.name = inGameMenuPrefab.name;
-		SetPlayerStatistics (inGameMenu);
+		MenuBundle.instance.SetPlayerStatistics (inGameMenu);
 	}
 
 
-	private void SetPlayerStatistics (GameObject menu)
-	{
-		List<Text> infoList = new List<Text> ();
-		Text[] objs = menu.GetComponentsInChildren<Text> ();
-		foreach (Text obj in objs) {
-			if (MenuBundle.MENU_INFO_TAG == obj.tag) {
-				infoList.Add (obj);
-			}
-		}
-		Text[] infos = infoList.ToArray ();
-		infos [0].text = "task solved: " + PlayerData.instance.tasksSolved.ToString ();
-		infos [1].text = "attempts made: " + PlayerData.instance.attemptsMade.ToString ();
-		infos [2].text = "total creativity: " + PlayerData.instance.Creativity ();
-	}
+
 
 
 	public void CloseInGameMenu() {
 		Destroy (inGameMenu);
 	}
 
+
 	public bool IsAnyMenuOpened() {
 		return finishMenu != null || inGameMenu != null;
 	}
+
+
+	public void ChangeControlMode() {
+		isVRSimulated = !isVRSimulated;
+	}
+
 }

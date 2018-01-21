@@ -19,11 +19,11 @@ public abstract class CommonPlayerController : MonoBehaviour
 	private MouseState mouseState;
 	private bool inGameMenuActive = false;
 
-	public abstract CommonCrosshairController GetCrosshair ();
+	public abstract CommonCrosshairController SetCrosshair ();
 
 
 	public void OnSelectObject (GameObject selectedObject) {
-		if (MenuBundle.instance.IsMenuSelected (selectedObject)) {
+		if (MenuBundle.instance.IsMenuItem (selectedObject)) {
 			ValidateMenuSelection (selectedObject);
 		} else {
 			ValidateSelection (selectedObject);
@@ -75,11 +75,11 @@ public abstract class CommonPlayerController : MonoBehaviour
 
 	void Awake ()
 	{
-		crosshairController = GetCrosshair ();
+		crosshairController = SetCrosshair ();
 		mouseState = new MouseState ();
 	}
 
-	public virtual void Start ()
+	protected virtual void Start ()
 	{
 		Cursor.visible = false;
 	}

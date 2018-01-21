@@ -20,18 +20,23 @@ public class MGPlayerController : CommonPlayerController
 	private State state;
 	private Task task;
 	private float startTime;
+	private CommonCrosshairController crosshair;
 
 
-	public override CommonCrosshairController GetCrosshair ()
+	public override CommonCrosshairController SetCrosshair ()
 	{
-		return GetComponentInChildren<MGCrosshairController> ();
+		crosshair = GetComponentInChildren<MGCrosshairController> ();
+		return crosshair;
 	}
 
-	public override void Start ()
+	protected override void Start ()
 	{
 		base.Start ();
 		state = State.MoveNext;
 		task = TaskController.instance.GetCurrentTask ();
+		if (GameController.isVRSimulated) {
+			crosshair.SetVRControlMode();
+		}
 	}
 
 

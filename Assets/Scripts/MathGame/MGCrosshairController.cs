@@ -6,7 +6,7 @@ public class MGCrosshairController : CommonCrosshairController {
 	{
 
 		if (GameController.instance.IsAnyMenuOpened ()) {
-			return MenuBundle.instance.IsMenuSelected(gameObject);
+			return MenuBundle.instance.IsMenuItem(gameObject);
 		}
 
 		return  TaskController.instance.IsCurrentTaskAnswerSelected (gameObject);
