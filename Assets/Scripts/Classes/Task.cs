@@ -5,6 +5,7 @@ using UnityEngine;
 public class Task {
 
 	public const string ANSWER_TAG = "Answer";
+	public const string UNTAGGED_TAG = "Untagged";
 
 	private const float FRONT_DISTANCE = 5f;
 

@@ -5,6 +5,8 @@ public class MenuBundle
 {
 	public static MenuBundle instance = new MenuBundle();
 
+	public const string MENU_INFO_TAG = "Info";
+
 	private const string MENU_ITEM_TAG = "MenuItem";
 
 	private const string FINISH_MENU_ITEM1 = "FinishMenu.Item1";
@@ -13,6 +15,8 @@ public class MenuBundle
 	private const string MAIN_MENU_ITEM1 = "MainMenu.Item1";
 	private const string MAIN_MENU_ITEM4 = "MainMenu.Item4";
 
+	private const string IN_GAME_MENU_ITEM1 = "InGameMenu.Item1";
+
 
 	// FINISH MENU
 
@@ -20,8 +24,10 @@ public class MenuBundle
 		return FINISH_MENU_ITEM1.Equals(GetItem(selectedItem));
 	}
 
+
+	// Used either in FinishMenu or InGameMenu
 	public bool IsBackToMainMenu(GameObject selectedItem) {
-		return FINISH_MENU_ITEM2.Equals(GetItem(selectedItem));
+		return FINISH_MENU_ITEM2.Equals(GetItem(selectedItem)) || IN_GAME_MENU_ITEM1.Equals(GetItem(selectedItem));
 	}
 
 

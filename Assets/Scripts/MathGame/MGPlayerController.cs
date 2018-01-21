@@ -6,6 +6,7 @@ public class MGPlayerController : CommonPlayerController
 {
 	private const float MOVEMENT_SPEED = 100f;
 	private const float MENU_FRONT_DISTANCE = 4.5f;
+	private const float MENU_UP_DISTANCE = 5.5f;
 	private const float REGULAR_DELAY = 1f;
 
 	private enum State
@@ -45,7 +46,11 @@ public class MGPlayerController : CommonPlayerController
 	{
 		if (State.Finished != state) {
 			if (TaskController.instance.CheckAnswer (selectedObject)) {
-				StartCoroutine (NextTask());
+				PlayerData.instance.attemptsMade++;
+				PlayerData.instance.tasksSolved++;
+				StartCoroutine (NextTask ());
+			} else {
+				PlayerData.instance.attemptsMade++;
 			}
 		}
 	}
@@ -59,7 +64,7 @@ public class MGPlayerController : CommonPlayerController
 	protected override void ValidateMenuSelection (GameObject selectedItem)
 	{
 		if (MenuBundle.instance.IsRestart (selectedItem)) {
-			GameController.instance.RunMathGame ();
+			GameController.instance.RestartMathGame ();
 
 		} else if (MenuBundle.instance.IsBackToMainMenu (selectedItem)) {
 			GameController.instance.StartMenu ();
@@ -102,12 +107,31 @@ public class MGPlayerController : CommonPlayerController
 	private IEnumerator FinishAction ()
 	{
 		yield return new WaitForSeconds (REGULAR_DELAY);
-		GameController.instance.Finish (GetMenuFrontPostion ());
+		GameController.instance.OpenFinishMenu (GetMenuFrontPosition ());
 	}
 
 
-	public Vector3 GetMenuFrontPostion ()
+	public Vector3 GetMenuFrontPosition ()
 	{
 		return transform.position + Vector3.forward * MENU_FRONT_DISTANCE;
 	}
+
+
+	public Vector3 GetMenuUpPosition ()
+	{
+		return transform.position + transform.forward * MENU_UP_DISTANCE;
+	}
+
+
+	protected override void HandleInGameMenuOpen ()
+	{
+		GameController.instance.OpenInGameMenu (GetMenuUpPosition(), transform.rotation);
+	}
+
+	protected override void HandleInGameMenuClose ()
+	{
+		GameController.instance.CloseInGameMenu ();
+	}
+
+
 }

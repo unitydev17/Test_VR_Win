@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 
 public class GameController : MonoBehaviour
@@ -10,11 +11,14 @@ public class GameController : MonoBehaviour
 	public static GameController instance;
 
 	public GameObject finishMenuPrefab;
+	public GameObject inGameMenuPrefab;
 
 	private string[] games = new string[]{ "Start", "MathGame" };
+	private GameObject inGameMenu;
+	private GameObject finishMenu;
 	private int currentGame = 1;
 
-	void Awake ()
+	private void Awake ()
 	{
 		if (instance == null) {
 			instance = this;
@@ -23,7 +27,7 @@ public class GameController : MonoBehaviour
 		}
 		Destroy (this);
 	}
-
+		
 
 	public void RunGame ()
 	{
@@ -39,9 +43,10 @@ public class GameController : MonoBehaviour
 	}
 
 
-	public void Finish(Vector3 position) {
-		GameObject finishMenu = Instantiate (finishMenuPrefab, position, Quaternion.identity);
+	public void OpenFinishMenu(Vector3 position) {
+		finishMenu = Instantiate (finishMenuPrefab, position, Quaternion.identity);
 		finishMenu.name = finishMenuPrefab.name;
+		SetPlayerStatistics (finishMenu);
 	}
 
 
@@ -51,7 +56,48 @@ public class GameController : MonoBehaviour
 
 
 	public void RunMathGame() {
+		PlayerData.instance.Save ();
 		currentGame = 1;
 		RunGame ();
+	}
+
+	public void RestartMathGame() {
+		PlayerData.instance.Reset ();
+		RunMathGame ();
+	}
+
+	public void OpenInGameMenu(Vector3 position, Quaternion rotation) {
+		if (IsAnyMenuOpened ()) {
+			return;
+		}
+
+		inGameMenu = Instantiate (inGameMenuPrefab, position, rotation);
+		inGameMenu.name = inGameMenuPrefab.name;
+		SetPlayerStatistics (inGameMenu);
+	}
+
+
+	private void SetPlayerStatistics (GameObject menu)
+	{
+		List<Text> infoList = new List<Text> ();
+		Text[] objs = menu.GetComponentsInChildren<Text> ();
+		foreach (Text obj in objs) {
+			if (MenuBundle.MENU_INFO_TAG == obj.tag) {
+				infoList.Add (obj);
+			}
+		}
+		Text[] infos = infoList.ToArray ();
+		infos [0].text = "task solved: " + PlayerData.instance.tasksSolved.ToString ();
+		infos [1].text = "attempts made: " + PlayerData.instance.attemptsMade.ToString ();
+		infos [2].text = "total creativity: " + PlayerData.instance.Creativity ();
+	}
+
+
+	public void CloseInGameMenu() {
+		Destroy (inGameMenu);
+	}
+
+	public bool IsAnyMenuOpened() {
+		return finishMenu != null || inGameMenu != null;
 	}
 }

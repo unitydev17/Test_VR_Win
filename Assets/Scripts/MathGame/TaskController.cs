@@ -84,7 +84,7 @@ public class TaskController : MonoBehaviour
 		int answerNum = GetAnswerNumber (answer);
 
 		bool correct = (task.correctNumber == answerNum);
-
+		answer.tag = Task.UNTAGGED_TAG;
 		answer.GetComponent<MeshRenderer> ().material = correct ? correctMaterial : incorrectMaterial;
 
 		return correct;

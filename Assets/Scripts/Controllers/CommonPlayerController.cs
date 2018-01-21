@@ -10,11 +10,14 @@ public abstract class CommonPlayerController : MonoBehaviour
 
 	private const float MAX_ANGLE_Y = 90f;
 	private const float MIN_ANGLE_Y = -90f;
+	private const float SHOW_IN_GAME_MENU_ANGLE_Y = 60f;
+	private const float HIDE_IN_GAME_MENU_ANGLE_Y = 35f;
 
 	protected float positionY = 4f;
 	private float rotationY = 0f;
 
 	private MouseState mouseState;
+	private bool inGameMenuActive = false;
 
 	public abstract CommonCrosshairController GetCrosshair ();
 
@@ -114,14 +117,42 @@ public abstract class CommonPlayerController : MonoBehaviour
 	}
 
 
-	void HandleMouseDirection ()
+	private void HandleMouseDirection ()
 	{
 		float dx = Input.GetAxis ("Mouse X");
 		float dy = Input.GetAxis ("Mouse Y");
 		float rotationX = transform.localEulerAngles.y + dx;
 		rotationY += dy;
+
+		HandleInGameMenu ();
+	
 		rotationY = Mathf.Clamp (rotationY, MIN_ANGLE_Y, MAX_ANGLE_Y);
 		transform.localEulerAngles = new Vector3 (-rotationY, rotationX, 0);
 	}
-		
+
+
+	void HandleInGameMenu ()
+	{
+		if (!inGameMenuActive && rotationY >= SHOW_IN_GAME_MENU_ANGLE_Y) {
+			HandleInGameMenuOpen ();
+			inGameMenuActive = true;
+		}
+		if (inGameMenuActive && rotationY <= HIDE_IN_GAME_MENU_ANGLE_Y) {
+			HandleInGameMenuClose ();
+			inGameMenuActive = false;
+		}
+	}
+
+	/// <summary>
+	/// Handles the in game menu. Override this method to add menu.
+	/// </summary>
+	protected virtual void HandleInGameMenuOpen() {
+	}
+
+	/// <summary>
+	/// Handles the in game menu close action.
+	/// </summary>
+	protected virtual void HandleInGameMenuClose() {
+	}
+
 }
