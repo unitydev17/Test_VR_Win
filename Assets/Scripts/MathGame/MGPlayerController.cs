@@ -32,11 +32,18 @@ public class MGPlayerController : CommonPlayerController
 	protected override void Start ()
 	{
 		base.Start ();
-		state = State.MoveNext;
-		task = TaskController.instance.GetCurrentTask ();
+
 		if (GameController.isVRSimulated) {
 			crosshair.SetVRControlMode();
 		}
+		if (PlayerData.instance.isGameActive) {
+			transform.position = PlayerData.instance.position;
+			transform.rotation = PlayerData.instance.rotation;
+			TaskController.instance.currentTaskNumber = PlayerData.instance.currentTaskNumber;
+		}
+
+		state = State.MoveNext;
+		task = TaskController.instance.GetCurrentTask ();
 	}
 
 
@@ -71,8 +78,11 @@ public class MGPlayerController : CommonPlayerController
 		if (MenuBundle.instance.IsRestart (selectedItem)) {
 			GameController.instance.RestartMathGame ();
 
-		} else if (MenuBundle.instance.IsBackToMainMenu (selectedItem)) {
-			GameController.instance.StartMenu ();
+		} else if (MenuBundle.instance.IsBackFromFinishMenu (selectedItem)) {
+			GameController.instance.BackFromFinishMenu ();
+
+		} else if (MenuBundle.instance.IsBackFromInGameMenu(selectedItem)) {
+			GameController.instance.BackFromInGameMenu();
 		}
 	}
 

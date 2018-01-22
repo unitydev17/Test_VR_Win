@@ -7,6 +7,7 @@ using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
+	private const string PLAYER_NAME = "Player";
 	private const string START_SCENE = "Start";
 	private const string MATH_GAME_SCENE = "MathGame";
 
@@ -20,6 +21,7 @@ public class GameController : MonoBehaviour
 
 	private GameObject inGameMenu;
 	private GameObject finishMenu;
+	private GameObject player;
 
 	private int currentGame = 1;
 
@@ -27,7 +29,7 @@ public class GameController : MonoBehaviour
 
 	private void Awake ()
 	{
-		SceneManager.sceneLoaded += CustomizeScenes;
+		SceneManager.sceneLoaded += PreProcessScenes;
 
 		if (instance == null) {
 			instance = this;
@@ -35,6 +37,21 @@ public class GameController : MonoBehaviour
 			return;
 		}
 		Destroy (this);
+	}
+		
+
+	/// <summary>
+	/// Preprocess scenes. Used for overload menu item`s text values and other initial stuff.
+	/// </summary>
+	/// <param name="scene">Scene.</param>
+	/// <param name="mode">Mode.</param>
+	public void PreProcessScenes(Scene scene, LoadSceneMode mode) {
+		if (START_SCENE.Equals (scene.name)) {
+			MenuBundle.instance.CustomizeMainMenu (isVRSimulated, PlayerData.instance.isGameActive);
+		
+		} else if (MATH_GAME_SCENE.Equals (scene.name)) {
+			player = GameObject.Find (PLAYER_NAME);
+		}
 	}
 
 
@@ -44,7 +61,6 @@ public class GameController : MonoBehaviour
 			SceneManager.LoadScene (games [currentGame]);
 		}
 	}
-
 
 	private bool IsTestRange (int a, int b, int value)
 	{
@@ -59,19 +75,33 @@ public class GameController : MonoBehaviour
 	}
 
 
+	public void BackToMainMenuFromFinishMenu() {
+		PlayerData.instance.Reset ();
+		StartMenu ();
+	}
+
+
+	public void BackToMainMenuFromInGameMenu() {
+		SavePlayerState ();
+		StartMenu ();
+	}
+
+
 	public void StartMenu() {
 		SceneManager.LoadScene (games [0]);
 	}
 
-	public void CustomizeScenes(Scene scene, LoadSceneMode mode) {
-		if (START_SCENE.Equals (scene.name)) {
-			MenuBundle.instance.CustomizeMainMenu (isVRSimulated);
-		}
+
+	private void SavePlayerState() {
+		PlayerData.instance.currentTaskNumber = TaskController.instance.currentTaskNumber;
+		TaskController.instance.GetTaskUserAnswers (out PlayerData.instance.taskAnswers);
+		PlayerData.instance.position = player.transform.position;
+		PlayerData.instance.rotation = player.transform.rotation;
+		PlayerData.instance.Save ();
 	}
 
 
 	public void RunMathGame() {
-		PlayerData.instance.Save ();
 		currentGame = 1;
 		RunGame ();
 	}
@@ -90,9 +120,6 @@ public class GameController : MonoBehaviour
 		inGameMenu.name = inGameMenuPrefab.name;
 		MenuBundle.instance.SetPlayerStatistics (inGameMenu);
 	}
-
-
-
 
 
 	public void CloseInGameMenu() {

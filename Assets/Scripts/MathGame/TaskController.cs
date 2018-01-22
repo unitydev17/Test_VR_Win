@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -17,23 +18,23 @@ public class TaskController : MonoBehaviour
 	public Material correctMaterial;
 
 
+	public int currentTaskNumber = 0;
 	private Task[] tasks = new Task[4];
-	private int currentTask;
 	private GameObject root;
 
 
-	void Awake ()
+	private void Awake ()
 	{
 		if (instance == null) {
 			instance = this;
 		}
 
-		root = new GameObject ("Root");
-		currentTask = 0;
 		tasks [0] = new Task (0, new Vector3 (20f, 3f, -30f), "1 + 2 = ?", 1, "1", "3", "4");
 		tasks [1] = new Task (1, new Vector3 (-25f, 3f, -30f), "3 * (4 - 12) = ?", 2, "64", "-33", "-24", "12");
 		tasks [2] = new Task (2, new Vector3 (-25f, 3f, 25f), "44 * 11 = ?", 1, "554", "484", "441", "444", "447");
 		tasks [3] = new Task (3, new Vector3 (25f, 3f, 25f), "12 * 13 = ?", 2, "165", "136", "156", "123", "126", "221");
+
+		root = new GameObject ("Root");
 		foreach (Task task in tasks) {
 			PlaceTask (task);
 		}
@@ -42,23 +43,23 @@ public class TaskController : MonoBehaviour
 
 	public Task GetCurrentTask ()
 	{
-		return tasks [currentTask];
+		return tasks [currentTaskNumber];
 	}
 
 	public bool IsCurrentTask (int value)
 	{
-		return currentTask == value;
+		return currentTaskNumber == value;
 	}
 
 
 	public Task NextTask ()
 	{
-		if (currentTask == (tasks.Length - 1)) {
+		if (currentTaskNumber == (tasks.Length - 1)) {
 			return null;
 		} else {
-			currentTask++;
+			currentTaskNumber++;
 		}
-		return tasks [currentTask];
+		return tasks [currentTaskNumber];
 	}
 
 
@@ -86,6 +87,7 @@ public class TaskController : MonoBehaviour
 		bool correct = (task.correctNumber == answerNum);
 		answer.tag = Task.UNTAGGED_TAG;
 		answer.GetComponent<MeshRenderer> ().material = correct ? correctMaterial : incorrectMaterial;
+		task.userAnswers.Add(answerNum);
 
 		return correct;
 	}
@@ -93,6 +95,14 @@ public class TaskController : MonoBehaviour
 	private int GetAnswerNumber (GameObject answer)
 	{
 		return int.Parse (answer.name.Substring (ANSWER_PREFIX.Length));
+	}
+
+
+	public void GetTaskUserAnswers(out Dictionary<int, List<int>> taskAnswers) {
+		taskAnswers = new Dictionary<int, List<int>> ();
+		foreach (Task task in tasks) {
+			taskAnswers.Add (task.number, task.userAnswers);
+		}
 	}
 
 
@@ -152,18 +162,28 @@ public class TaskController : MonoBehaviour
 		float angle = angle0;
 		int num = 0;
 
+		List<int> playerAnswers;
+		PlayerData.instance.taskAnswers.TryGetValue (taskNumber, out playerAnswers);
+
 		while (angle < (360 + angle0)) {
 			angle += deltaAngle;
 			baseVector = Quaternion.AngleAxis (angle, Vector3.forward) * Vector3.right.normalized * RAD;
 			Vector3 pos = centerPosition + baseVector;
+
 			GameObject answer = Instantiate (answerPrefab, pos, transform.rotation);
 			answer.name = ANSWER_PREFIX + num.ToString ();
 			answer.transform.parent = parent;
-			answer.GetComponentInChildren<Text> ().text = task.answers [num++];
+			answer.GetComponentInChildren<Text> ().text = task.answers [num];
+
+			if (playerAnswers != null && playerAnswers.Contains (num)) {
+				CheckAnswer (answer);
+			}
+			num++;
 		}
 	}
 
-	static void AdjustStartAngle (ref float angle0, float deltaAngle)
+
+	private void AdjustStartAngle (ref float angle0, float deltaAngle)
 	{
 		if (deltaAngle == 90) {
 			angle0 = 45;

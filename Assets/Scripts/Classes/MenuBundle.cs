@@ -22,6 +22,8 @@ public class MenuBundle
 
 	private const string VR_SIMULATION_MODE_TEXT = "VR simulation mode";
 	private const string WIN_MODE_TEXT = "Win mode";
+	private const string START_MATH_GAME_TEXT = "Start math game";
+	private const string CONTINUE_MATH_GAME_TEXT = "Continue math game";
 	private const string ATTEMPTS_MADE_TEXT = "attempts made: ";
 	private const string TASK_SOLVED_TEXT = "task solved: ";
 	private const string TOTAL_CREATIVITY_TEXT = "total creativity: ";
@@ -33,9 +35,15 @@ public class MenuBundle
 	}
 
 
-	// Used either in FinishMenu or InGameMenu
-	public bool IsBackToMainMenu(GameObject selectedItem) {
-		return FINISH_MENU_ITEM2.Equals(GetItem(selectedItem)) || IN_GAME_MENU_ITEM1.Equals(GetItem(selectedItem));
+	public bool IsBackFromFinishMenu(GameObject selectedItem) {
+		return FINISH_MENU_ITEM2.Equals(GetItem(selectedItem));
+	}
+
+
+	// IN GAME MENU
+
+	public bool IsBackFromInGameMenu(GameObject selectedItem) {
+		return IN_GAME_MENU_ITEM1.Equals(GetItem(selectedItem));
 	}
 
 
@@ -56,17 +64,26 @@ public class MenuBundle
 
 	// Helpers
 
-	public void CustomizeMainMenu (bool isVRMode)
+	public void CustomizeMainMenu (bool isVRMode, bool isGameActive)
 	{
 		GameObject menu = GameObject.Find (MenuBundle.MAIN_MENU_NAME);
 		if (menu == null) {
 			return;
 		}
-		Transform[] objs = menu.GetComponentsInChildren<Transform> ();
-		foreach (Transform obj in objs) {
-			if (IsMenuItem(obj.gameObject) && IsChangeControlMode(obj.gameObject)) {
-				var textItem = obj.GetComponentInChildren<Text> ();
-				textItem.text = isVRMode ? WIN_MODE_TEXT : VR_SIMULATION_MODE_TEXT;
+		Transform[] tfs = menu.GetComponentsInChildren<Transform> ();
+		foreach (Transform tf in tfs) {
+			if (IsMenuItem(tf.gameObject)) {
+
+				if (IsChangeControlMode (tf.gameObject)) {
+					var textItem = tf.GetComponentInChildren<Text> ();
+					textItem.text = isVRMode ? WIN_MODE_TEXT : VR_SIMULATION_MODE_TEXT;
+
+
+				} else if (IsRunMathGame (tf.gameObject)) {
+					var textItem = tf.GetComponentInChildren<Text> ();
+					textItem.text = isGameActive ? CONTINUE_MATH_GAME_TEXT : START_MATH_GAME_TEXT;
+				}
+
 			}
 		}
 	}

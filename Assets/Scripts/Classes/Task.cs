@@ -14,6 +14,7 @@ public class Task {
 	public string question;
 	public string[] answers;
 	public int correctNumber;
+	public List<int> userAnswers;
 
 
 	public Task (int number, Vector3 position, string question, int correctNumber, params string[] answers) {
@@ -22,6 +23,8 @@ public class Task {
 		this.question = question;
 		this.answers = answers;
 		this.correctNumber = correctNumber;
+		userAnswers = new List<int>();
+
 	}
 
 	public int GetNumPieces() {
