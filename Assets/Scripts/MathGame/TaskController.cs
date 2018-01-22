@@ -81,7 +81,13 @@ public class TaskController : MonoBehaviour
 
 	public bool CheckAnswer (GameObject answer)
 	{
-		Task task = GetCurrentTask ();
+		return CheckAnswer (answer, currentTaskNumber);
+	}
+
+
+	private bool CheckAnswer (GameObject answer, int taskNumber)
+	{
+		Task task = tasks[taskNumber];
 		int answerNum = GetAnswerNumber (answer);
 
 		bool correct = (task.correctNumber == answerNum);
@@ -176,7 +182,7 @@ public class TaskController : MonoBehaviour
 			answer.GetComponentInChildren<Text> ().text = task.answers [num];
 
 			if (playerAnswers != null && playerAnswers.Contains (num)) {
-				CheckAnswer (answer);
+				CheckAnswer (answer, taskNumber);
 			}
 			num++;
 		}
