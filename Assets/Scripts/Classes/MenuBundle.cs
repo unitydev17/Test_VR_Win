@@ -35,14 +35,14 @@ public class MenuBundle
 	}
 
 
-	public bool IsBackFromFinishMenu(GameObject selectedItem) {
+	public bool IsBackToMainMenuFromFinishMenu(GameObject selectedItem) {
 		return FINISH_MENU_ITEM2.Equals(GetItem(selectedItem));
 	}
 
 
 	// IN GAME MENU
 
-	public bool IsBackFromInGameMenu(GameObject selectedItem) {
+	public bool IsBackToMainMenuFromInGameMenu(GameObject selectedItem) {
 		return IN_GAME_MENU_ITEM1.Equals(GetItem(selectedItem));
 	}
 

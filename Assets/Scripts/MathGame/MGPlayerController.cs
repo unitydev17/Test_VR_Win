@@ -78,11 +78,11 @@ public class MGPlayerController : CommonPlayerController
 		if (MenuBundle.instance.IsRestart (selectedItem)) {
 			GameController.instance.RestartMathGame ();
 
-		} else if (MenuBundle.instance.IsBackFromFinishMenu (selectedItem)) {
-			GameController.instance.BackFromFinishMenu ();
+		} else if (MenuBundle.instance.IsBackToMainMenuFromFinishMenu (selectedItem)) {
+			GameController.instance.BackToMainMenuFromFinishMenu ();
 
-		} else if (MenuBundle.instance.IsBackFromInGameMenu(selectedItem)) {
-			GameController.instance.BackFromInGameMenu();
+		} else if (MenuBundle.instance.IsBackToMainMenuFromInGameMenu(selectedItem)) {
+			GameController.instance.BackToMainMenuFromInGameMenu();
 		}
 	}
 
